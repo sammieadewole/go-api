@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Tester</title>
+    <link rel="stylesheet" href="/static/index.css">
+    <script type="module" src="/static/index.js"></script>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Available Endpoints</h2>
+        
+        <div class="endpoint-group">
+            <h3>Public</h3>
+            <div class="endpoint-item" data-endpoint="hello">
+                <div>
+                    <span class="endpoint-method method-GET">GET</span>
+                    <span class="endpoint-path">/hello</span>
+                </div>
+                <div class="endpoint-desc">Simple hello world</div>
+            </div>
+        </div>
+
+        <div class="endpoint-group">
+            <h3>Authentication</h3>
+            <div class="endpoint-item" data-endpoint="register">
+                <div>
+                    <span class="endpoint-method method-POST">POST</span>
+                    <span class="endpoint-path">/api/register</span>
+                </div>
+                <div class="endpoint-desc">Register new customer</div>
+            </div>
+            <div class="endpoint-item" data-endpoint="login">
+                <div>
+                    <span class="endpoint-method method-POST">POST</span>
+                    <span class="endpoint-path">/api/login</span>
+                </div>
+                <div class="endpoint-desc">Login and get token</div>
+            </div>
+            <div class="endpoint-item" data-endpoint="profile">
+                <div>
+                    <span class="endpoint-method method-GET">GET</span>
+                    <span class="endpoint-path">/api/profile</span>
+                    <span class="info-badge">AUTH</span>
+                </div>
+                <div class="endpoint-desc">Get current user profile</div>
+            </div>
+            <div class="endpoint-item" data-endpoint="logout">
+                <div>
+                    <span class="endpoint-method method-POST">POST</span>
+                    <span class="endpoint-path">/api/logout</span>
+                    <span class="info-badge">AUTH</span>
+                </div>
+                <div class="endpoint-desc">Logout current user</div>
+            </div>
+        </div>
+
+        <div class="endpoint-group">
+            <h3>Customers</h3>
+            <div class="endpoint-item" data-endpoint="customers-list">
+                <div>
+                    <span class="endpoint-method method-GET">GET</span>
+                    <span class="endpoint-path">/api/customers</span>
+                    <span class="info-badge">AUTH</span>
+                </div>
+                <div class="endpoint-desc">Get all customers</div>
+            </div>
+            <div class="endpoint-item" data-endpoint="customers-get">
+                <div>
+                    <span class="endpoint-method method-GET">GET</span>
+                    <span class="endpoint-path">/api/customers/:id</span>
+                    <span class="info-badge">AUTH</span>
+                </div>
+                <div class="endpoint-desc">Get customer by ID</div>
+            </div>
+            <div class="endpoint-item" data-endpoint="customers-email">
+                <div>
+                    <span class="endpoint-method method-GET">GET</span>
+                    <span class="endpoint-path">/api/customers/email/:email</span>
+                    <span class="info-badge">AUTH</span>
+                </div>
+                <div class="endpoint-desc">Get customer by email</div>
+            </div>
+            <div class="endpoint-item" data-endpoint="customers-update">
+                <div>
+                    <span class="endpoint-method method-PUT">PUT</span>
+                    <span class="endpoint-path">/api/customers/:id</span>
+                    <span class="info-badge">AUTH</span>
+                </div>
+                <div class="endpoint-desc">Update customer</div>
+            </div>
+            <div class="endpoint-item" data-endpoint="customers-soft-delete">
+                <div>
+                    <span class="endpoint-method method-DELETE">DELETE</span>
+                    <span class="endpoint-path">/api/customers/:id</span>
+                    <span class="info-badge">AUTH</span>
+                </div>
+                <div class="endpoint-desc">Soft delete customer</div>
+            </div>
+            <div class="endpoint-item" data-endpoint="customers-hard-delete">
+                <div>
+                    <span class="endpoint-method method-PATCH">PATCH</span>
+                    <span class="endpoint-path">/api/customers/:id</span>
+                    <span class="info-badge">AUTH</span>
+                </div>
+                <div class="endpoint-desc">Hard delete customer</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+            <h1>
+                <button class="toggle-sidebar" id="toggleSidebar">
+                    <span>☰</span>
+                    <span id="toggleText">Hide Sidebar</span>
+                </button>
+                API Tester
+            </h1>
+            
+            <div class="request-section">
+                <div class="url-row">
+                    <select id="method">
+                        <option value="GET">GET</option>
+                        <option value="POST">POST</option>
+                        <option value="PUT">PUT</option>
+                        <option value="PATCH">PATCH</option>
+                        <option value="DELETE">DELETE</option>
+                    </select>
+                    <input type="text" id="url" placeholder="Enter URL or select an endpoint from the sidebar">
+                    <button id="send">Send</button>
+                </div>
+
+                <div class="form-group">
+                    <label>Headers (JSON format)</label>
+                    <textarea id="headers" placeholder='{"Content-Type": "application/json"}'></textarea>
+                </div>
+
+                <div class="form-group" id="body-group">
+                    <label>Body (JSON)</label>
+                    <textarea id="body" placeholder='{"key": "value"}'></textarea>
+                </div>
+            </div>
+
+            <div class="response-section" id="response-section">
+                <div class="response-header">
+                    <h2>Response</h2>
+                    <span class="status hidden" id="status"></span>
+                </div>
+                <div class="response-body">
+                    <pre id="response">No response yet. Select an endpoint from the sidebar or enter a URL to test.</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

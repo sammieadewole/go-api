@@ -1,0 +1,40 @@
+# Environment variables (CRITICAL - contains secrets!)
+.env
+.env.local
+.env.*.local
+
+# Go build artifacts
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+go-api
+/bin/
+/tmp/
+
+# Go test files
+*.test
+*.out
+coverage.txt
+coverage.html
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Docker volumes (if they exist locally)
+pgdata/
+mongodata/
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/

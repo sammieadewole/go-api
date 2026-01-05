@@ -1,0 +1,12 @@
+- Research and strategize on what you need (official docs)
+    gorm, mongodb
+- Create the project and build flow
+- Initiate the api and write logic for dynamically switching between postgres and mongodb
+- Create and connect postgres and mongo client and plug them into the logic
+- Define the api routes and crud functions you want
+- Plug them to the api and test them
+- Create the auth middleware (password and magic link)
+- Connect the muddleware to the router
+- Write tests
+- Write documentation
+- Upload to github repo
