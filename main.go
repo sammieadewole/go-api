@@ -38,14 +38,9 @@ func main() {
 	}
 	log.Println("POSTGRES successfully initiated")
 
-	if err := db.MigrateMongo("customers", "sessions"); err != nil {
-		log.Fatalf("Failed to migrate mongo: %v", err)
-	}
-	log.Println("MONGODB successfully initiated")
-
 	// Initiate handlers
 	customerHander := handlers.NewCustomerHandler()
-	authHandler := handlers.NewSessionHandler()
+	authHandler := handlers.NewCombinedHandker()
 
 	// Initialise router
 	if os.Getenv("GIN_MODE") != "production" {
@@ -61,18 +56,12 @@ func main() {
 	// Initialize routes
 	api := router.Group("/api")
 	{
-		api.POST("/register", authHandler.Register)
 		api.POST("/login", authHandler.Login)
-
-		api.Use(middleware.JWTMiddleware())
-		api.GET("/profile", authHandler.GetProfile)
+		api.POST("/register", authHandler.Register)
 		api.POST("/logout", authHandler.Logout)
+		api.Use(middleware.JWTMiddleware())
 		api.GET("/customers", customerHander.Get)
-		api.GET("/customers/:id", customerHander.GetOne)
-		api.GET("/customers/email/:email", customerHander.GetByEmail)
-		api.PUT("/customers/:id", customerHander.Update)
-		api.DELETE("/customers/:id", customerHander.SoftDelete)
-		api.PATCH("/customers/:id", customerHander.HardDelete)
+		api.POST("/customers", customerHander.Create)
 	}
 
 	// Public homepage

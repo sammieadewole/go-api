@@ -13,12 +13,12 @@
         
         <div class="endpoint-group">
             <h3>Public</h3>
-            <div class="endpoint-item" data-endpoint="hello">
+            <div class="endpoint-item" data-endpoint="health">
                 <div>
                     <span class="endpoint-method method-GET">GET</span>
-                    <span class="endpoint-path">/hello</span>
+                    <span class="endpoint-path">/health</span>
                 </div>
-                <div class="endpoint-desc">Simple hello world</div>
+                <div class="endpoint-desc">Simple health check</div>
             </div>
         </div>
 
@@ -37,14 +37,6 @@
                     <span class="endpoint-path">/api/login</span>
                 </div>
                 <div class="endpoint-desc">Login and get token</div>
-            </div>
-            <div class="endpoint-item" data-endpoint="profile">
-                <div>
-                    <span class="endpoint-method method-GET">GET</span>
-                    <span class="endpoint-path">/api/profile</span>
-                    <span class="info-badge">AUTH</span>
-                </div>
-                <div class="endpoint-desc">Get current user profile</div>
             </div>
             <div class="endpoint-item" data-endpoint="logout">
                 <div>
@@ -66,46 +58,15 @@
                 </div>
                 <div class="endpoint-desc">Get all customers</div>
             </div>
-            <div class="endpoint-item" data-endpoint="customers-get">
+            <div class="endpoint-item method-POST" data-endpoint="customers-create">
                 <div>
-                    <span class="endpoint-method method-GET">GET</span>
-                    <span class="endpoint-path">/api/customers/:id</span>
+                    <span class="endpoint-method method-POST">POST</span>
+                    <span class="endpoint-path">/api/customers</span>
                     <span class="info-badge">AUTH</span>
                 </div>
-                <div class="endpoint-desc">Get customer by ID</div>
+                <div class="endpoint-desc">Create customer</div>
             </div>
-            <div class="endpoint-item" data-endpoint="customers-email">
-                <div>
-                    <span class="endpoint-method method-GET">GET</span>
-                    <span class="endpoint-path">/api/customers/email/:email</span>
-                    <span class="info-badge">AUTH</span>
-                </div>
-                <div class="endpoint-desc">Get customer by email</div>
-            </div>
-            <div class="endpoint-item" data-endpoint="customers-update">
-                <div>
-                    <span class="endpoint-method method-PUT">PUT</span>
-                    <span class="endpoint-path">/api/customers/:id</span>
-                    <span class="info-badge">AUTH</span>
-                </div>
-                <div class="endpoint-desc">Update customer</div>
-            </div>
-            <div class="endpoint-item" data-endpoint="customers-soft-delete">
-                <div>
-                    <span class="endpoint-method method-DELETE">DELETE</span>
-                    <span class="endpoint-path">/api/customers/:id</span>
-                    <span class="info-badge">AUTH</span>
-                </div>
-                <div class="endpoint-desc">Soft delete customer</div>
-            </div>
-            <div class="endpoint-item" data-endpoint="customers-hard-delete">
-                <div>
-                    <span class="endpoint-method method-PATCH">PATCH</span>
-                    <span class="endpoint-path">/api/customers/:id</span>
-                    <span class="info-badge">AUTH</span>
-                </div>
-                <div class="endpoint-desc">Hard delete customer</div>
-            </div>
+            
         </div>
     </div>
 

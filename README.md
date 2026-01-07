@@ -89,7 +89,7 @@ The make command installs dependencies and starts the server.
 - MONGOEXPRESS_PASS
 - PORT
 - JWT_SECRET
-- GIN_MODE (production/development)
+- ENV (production/development)
 - DOMAIN_URL
 
 ## Project Structure

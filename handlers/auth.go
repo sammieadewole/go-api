@@ -1,9 +1,9 @@
 package handlers
 
 import (
+	"go-api/middleware"
 	"go-api/models"
 	"go-api/repo"
-	"go-api/utils"
 	"net/http"
 	"os"
 	"regexp"
@@ -15,23 +15,36 @@ type AuthHandler struct {
 	SessionRepo *repo.RepoFactory[models.Session]
 }
 
-var customerRepo = NewCustomerHandler()
+type AdminHandler struct {
+	AdminRepo *repo.RepoFactory[models.AdminUser]
+}
 
-func NewSessionHandler() *AuthHandler {
-	return &AuthHandler{
-		SessionRepo: repo.NewRepoFactory(
-			repo.NewPostgresRepo[models.Session]("sessions"),
-			repo.NewMongoRepo[models.Session]("sessions"),
-		),
+type CombinedAuthHandler struct {
+	*AuthHandler
+	*AdminHandler
+}
+
+func NewCombinedHandker() *CombinedAuthHandler {
+	return &CombinedAuthHandler{
+		AuthHandler: &AuthHandler{
+			SessionRepo: repo.NewRepoFactory(
+				repo.NewPostgresRepo[models.Session]("sessions"), // Remove .(repo.Repository[models.Session])
+				repo.NewMongoRepo[models.Session]("sessions"),
+			),
+		},
+		AdminHandler: &AdminHandler{
+			AdminRepo: repo.NewRepoFactory(
+				repo.NewPostgresRepo[models.AdminUser]("admin_users"), // Already correct
+				repo.NewMongoRepo[models.AdminUser]("admin_users"),
+			),
+		},
 	}
 }
 
-func (h *AuthHandler) Register(c *gin.Context) {
+func (h *CombinedAuthHandler) Register(c *gin.Context) {
 	var body struct {
 		Email    string `json:"email" binding:"required,email"`
-		Password string `json:"password" binding:"required,min=6,max=20"`
-		Phone    string `json:"phone" binding:"required"`
-		Name     string `json:"name" binding:"required"`
+		Password string `json:"password" binding:"required"`
 	}
 
 	if err := c.ShouldBindJSON(&body); err != nil {
@@ -54,24 +67,15 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		return
 	}
 
-	customer, err := models.NewCustomer(body.Name, body.Email, body.Phone, body.Password)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create customer"})
+	user := models.NewAdminUser(body.Email, body.Password)
+	storage := repo.GetReadSource(c)
+	if err := h.AdminRepo.Create(user, storage); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create session"})
 		return
 	}
-
-	if err := customerRepo.CustomerRepo.Create(customer); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create customer"})
-		return
-	}
-
-	c.JSON(http.StatusCreated, gin.H{
-		"message": "Customer created successfully",
-		"data":    customer,
-	})
 }
 
-func (h *AuthHandler) Login(c *gin.Context) {
+func (h *CombinedAuthHandler) Login(c *gin.Context) {
 	var body struct {
 		Email    string `json:"email" binding:"required,email"`
 		Password string `json:"password" binding:"required,min=6,max=20"`
@@ -89,76 +93,31 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
-	customer, err := customerRepo.CustomerRepo.GetByEmail(body.Email, repo.ReadSource("sql"))
+	storage := repo.GetReadSource(c)
+
+	user, err := h.AdminHandler.AdminRepo.GetByEmail(body.Email, storage)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid email or password"})
 		return
 	}
 
-	if !utils.VerifyPassword(customer.HashedPassword, body.Password) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid email or password"})
-		return
-	}
-
-	token, err := utils.GenerateToken(customer.ID, customer.Email)
+	token, err := middleware.GenerateToken(user.ID, user.Email)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
 		return
 	}
-
-	public_customer := utils.CustomerPublic{
-		Name:      customer.Name,
-		Email:     customer.Email,
-		Phone:     customer.Phone,
-		CreatedAt: customer.CreatedAt,
-		UpdatedAt: customer.UpdatedAt,
-	}
-	session := models.NewSession(customer.ID, customer.Email, token)
-	h.SessionRepo.Create(session)
+	session := models.NewSession(user.ID, user.Email, token)
+	h.SessionRepo.Create(session, storage)
 
 	c.SetCookie("token", token, 3600, "/", domain, false, true)
 	c.JSON(http.StatusOK, gin.H{
-		"user": public_customer,
+		"message": "Login Successful",
 	})
-}
 
-func (h *AuthHandler) GetProfile(c *gin.Context) {
-	// Get user ID from JWT middleware context
-	userID := c.GetString("user_id")
-	if userID == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
-
-	// Get customer
-	customer, err := customerRepo.CustomerRepo.GetOne(userID, repo.ReadSource("sql"))
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Customer not found"})
-		return
-	}
-
-	public_customer := utils.CustomerPublic{
-		Name:      customer.Name,
-		Email:     customer.Email,
-		Phone:     customer.Phone,
-		CreatedAt: customer.CreatedAt,
-		UpdatedAt: customer.UpdatedAt,
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"user": public_customer,
-	})
 }
 
 func (h *AuthHandler) Logout(c *gin.Context) {
-	session, err := h.SessionRepo.GetByEmail(c.GetString("email"), repo.ReadSource("sql"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	h.SessionRepo.HardDelete(session.ID)
-
 	c.SetCookie(
 		"token",
 		"",

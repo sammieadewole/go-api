@@ -3,6 +3,7 @@ package models
 import (
 	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -43,21 +44,31 @@ func (customer *Customer) SetID() {
 	customer.ID = uuid.NewString()
 }
 
-func NewCustomer(name, email, phone, password string) (*Customer, error) {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 10)
-
-	if err != nil {
-		return nil, err
-	}
+func NewCustomer(name, email, phone string) (*Customer, error) {
 
 	return &Customer{
-		ID:             uuid.NewString(),
-		Name:           name,
-		Email:          email,
-		Phone:          phone,
-		HashedPassword: string(hashedPassword),
-		Role:           "user",
-		CreatedAt:      time.Now(),
-		UpdatedAt:      time.Now(),
+		ID:        uuid.NewString(),
+		Name:      name,
+		Email:     email,
+		Phone:     phone,
+		Role:      "user",
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}, nil
+}
+
+// Safe customer info to be sent to clients (no ID or IsDeleted)
+type CustomerPublic struct {
+	Name      string    `json:"name"`
+	Email     string    `json:"email"`
+	Phone     string    `json:"phone"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+// Claims for jwt
+type Claims struct {
+	UserID string `json:"user_id"`
+	Email  string `json:"email"`
+	jwt.RegisteredClaims
 }

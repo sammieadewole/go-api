@@ -1,4 +1,4 @@
-.PHONY: install build run clean
+.PHONY: install build run start clean
 
 install:
 	@echo "Installing dependencies..."
@@ -6,7 +6,11 @@ install:
 
 build: install
 	@echo "Building go server..."
-	go build -o main.exe main.go
+	go build -o main main.go
+
+run: build
+	@echo "Running go server..."
+	./main
 
 start: install build
 	@echo "Starting go server..."
@@ -15,6 +19,6 @@ start: install build
 
 clean:
 	@echo "Cleaning up..."
-	rm -f main.exe
+	rm -f main
 	docker compose down -v
 	rm -rf pgdata mongodata

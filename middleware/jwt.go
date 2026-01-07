@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"go-api/utils"
 	"net/http"
 	"strings"
 
@@ -32,7 +31,7 @@ func JWTMiddleware() gin.HandlerFunc {
 		}
 
 		// Validate token and get claims
-		claims, err := utils.ValidateToken(token)
+		claims, err := ValidateToken(token)
 
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})

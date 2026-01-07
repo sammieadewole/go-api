@@ -45,15 +45,6 @@ const endpoints = {
             password: 'Password123'
         }
     },
-    profile: {
-        method: 'GET',
-        url: 'http://localhost:8080/api/profile',
-        headers: { 
-            'Content-Type': 'application/json'
-        },
-        body: null,
-        note: 'Token will be sent automatically via cookie'
-    },
     logout: {
         method: 'POST',
         url: 'http://localhost:8080/api/logout',
@@ -72,56 +63,19 @@ const endpoints = {
         body: null,
         note: 'Token will be sent automatically via cookie'
     },
-    'customers-get': {
-        method: 'GET',
-        url: 'http://localhost:8080/api/customers/CUSTOMER_ID_HERE',
-        headers: { 
-            'Content-Type': 'application/json'
-        },
-        body: null,
-        note: 'Replace CUSTOMER_ID_HERE with actual ID'
-    },
-    'customers-email': {
-        method: 'GET',
-        url: 'http://localhost:8080/api/customers/email/john@example.com',
-        headers: { 
-            'Content-Type': 'application/json'
-        },
-        body: null,
-        note: 'Replace email with actual email'
-    },
-    'customers-update': {
-        method: 'PUT',
-        url: 'http://localhost:8080/api/customers/CUSTOMER_ID_HERE',
+    'customers-create': {
+        method: 'POST',
+        url: 'http://localhost:8080/api/customers',
         headers: { 
             'Content-Type': 'application/json'
         },
         body: {
             name: 'Jane Doe',
-            email: 'jane@example.com',
+            email: 'john@example.com',
             phone: '+1234567890',
-            password: 'NewPassword123'
+            password: 'Password123'
         },
-        note: 'Replace CUSTOMER_ID_HERE with actual ID'
     },
-    'customers-soft-delete': {
-        method: 'DELETE',
-        url: 'http://localhost:8080/api/customers/CUSTOMER_ID_HERE',
-        headers: { 
-            'Content-Type': 'application/json'
-        },
-        body: null,
-        note: 'Replace CUSTOMER_ID_HERE with actual ID'
-    },
-    'customers-hard-delete': {
-        method: 'PATCH',
-        url: 'http://localhost:8080/api/customers/CUSTOMER_ID_HERE',
-        headers: { 
-            'Content-Type': 'application/json'
-        },
-        body: null,
-        note: 'Replace CUSTOMER_ID_HERE with actual ID'
-    }
 };
 
 // Handle endpoint selection
@@ -141,12 +95,10 @@ document.querySelectorAll('.endpoint-item').forEach(item => {
         
         if (endpoint.body) {
             bodyInput.value = JSON.stringify(endpoint.body, null, 2);
-            bodyGroup.style.display = 'block';
+            bodyGroup.style.display = 'block';  // Already there, but add !important via style
         } else {
             bodyInput.value = '';
-            if (endpoint.method === 'GET' || endpoint.method === 'DELETE') {
-                bodyGroup.style.display = 'none';
-            }
+            bodyGroup.style.display = endpoint.method === 'GET' || endpoint.method === 'DELETE' ? 'none' : 'block';
         }
         
         // Show note if present

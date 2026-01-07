@@ -8,16 +8,9 @@ const (
 )
 
 // Generic repository interface
-type Repository[T any] interface {
+type Repository[T interface{}] interface {
 	Create(entity *T) error
 	Get() ([]*T, error)
-	GetOne(id string) (*T, error)
+	GetByID(id string) (*T, error)
 	GetByEmail(email string) (*T, error)
-	Update(id string, entity *T) error
-	SoftDelete(id string) error
-	HardDelete(id string) error
-	AdminGet() ([]*T, error)
-	AdminGetOne(id string) (*T, error)
-	AdminGetByEmail(email string) (*T, error)
-	AdminUpdate(id string, entity *T) error
 }
