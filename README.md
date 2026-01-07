@@ -21,6 +21,8 @@ Following the project specs strictly would have meant choosing between databases
 
 **Solution**: Built a RepoFactory that abstracts database selection away and implements dual-write with logical atomicity. Since actual atomicity is impossible across different database systems, I implemented rollback logic to maintain consistency.
 
+**Update**: Removed the atomic writes between the database, we now choose exactly which database to write and read from per route
+
 ### 2. Authentication: Bearer + HTTP-only Cookies
 The spec required Bearer tokens, but I have security concerns with this approach - JavaScript on the frontend should never be able to touch auth tokens (XSS vulnerability).
 
@@ -30,6 +32,8 @@ The spec required Bearer tokens, but I have security concerns with this approach
 
 ### 3. MongoDB Setup
 Had issues starting a MongoDB Atlas instance, so I used Docker instead. Pulled MongoDB and PostgreSQL images for local development.
+
+**Update**: Authenticatiom is now for internal use only not for customers
 
 ## Features
 
@@ -52,15 +56,11 @@ Had issues starting a MongoDB Atlas instance, so I used Docker instead. Pulled M
 
 ### API Endpoints
 - Public:
-    POST /api/register - Create account with password validation
+    POST /api/register - Create admin account with password validation (just for authentication)
     POST /api/login - Authenticate and receive JWT
 - Protected (JWT required):
     GET /api/customers?storage=sql|doc - List customers
     GET /api/customers/:id?storage=sql|doc - Get single customer
-    PUT /api/customers/:id - Update customer
-    DELETE /api/customers/:id - Soft delete
-    PATCH /api/customers/:id - Hard delete
-    GET /api/profile - Get current user profile
     POST /api/logout - Invalidate session
 
 ### Data Models
@@ -90,7 +90,6 @@ The make command installs dependencies and starts the server.
 - PORT
 - JWT_SECRET
 - ENV (production/development)
-- DOMAIN_URL
 
 ## Project Structure
 ```
