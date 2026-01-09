@@ -31,7 +31,7 @@ func JWTMiddleware() gin.HandlerFunc {
 		}
 
 		// Validate token and get claims
-		claims, err := ValidateToken(token)
+		claims, err := VerifyIDToken(c, token)
 
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
